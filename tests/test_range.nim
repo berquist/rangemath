@@ -104,20 +104,48 @@ suite "Range":
 
   test "GreaterThan":
     let rng = newRangeGreaterThan(5)
-    # TODO tests
+    check: low(int) notin rng
+    check: 5 notin rng
+    check: 6 in rng
+    check: high(int) in rng
+    check: rng.hasLowerBound()
+    check: not rng.hasUpperBound()
+    check: rng.lowerEndpoint == 5
+    check: rng.lowerBoundType() == Bound.open
+    check: not rng.isEmpty()
     check: $rng == "(5..+\u221e)"
 
   test "AtLeast":
     let rng = newRangeAtLeast(6)
-    # TODO tests
+    check: low(int) notin rng
+    check: 5 notin rng
+    check: 6 in rng
+    check: high(int) in rng
+    check: rng.hasLowerBound()
+    check: not rng.hasUpperBound()
+    check: rng.lowerEndpoint == 6
+    check: rng.lowerBoundType() == Bound.closed
+    check: not rng.isEmpty()
     check: $rng == "[6..+\u221e)"
 
   test "AtMost":
     let rng = newRangeAtMost(4)
-    # TODO tests
+    check: low(int) in rng
+    check: 4 in rng
+    check: 5 notin rng
+    check: high(int) notin rng
+    check: not rng.hasLowerBound()
+    check: rng.hasUpperBound()
+    check: rng.upperEndpoint == 4
+    check: rng.upperBoundType() == Bound.closed
+    check: not rng.isEmpty()
     check: $rng == "(-\u221e..4]"
 
   test "All":
     let rng = newRangeAll[int]()
-    # TODO tests
+    check: low(int) in rng
+    check: high(int) in rng
+    check: not rng.hasLowerBound()
+    check: not rng.hasUpperBound()
+    check: not rng.isEmpty()
     check: $rng == "(-\u221e..+\u221e)"
