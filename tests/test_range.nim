@@ -100,7 +100,7 @@ suite "Range":
     check: rng.upperEndpoint == 5
     check: rng.upperBoundType == Bound.open
     check: not rng.isEmpty()
-    check: $rng == "(-\u221e..5)"
+    check: $rng == "(-∞..5)"
 
   test "GreaterThan":
     let rng = newRangeGreaterThan(5)
@@ -113,7 +113,7 @@ suite "Range":
     check: rng.lowerEndpoint == 5
     check: rng.lowerBoundType() == Bound.open
     check: not rng.isEmpty()
-    check: $rng == "(5..+\u221e)"
+    check: $rng == "(5..+∞)"
 
   test "AtLeast":
     let rng = newRangeAtLeast(6)
@@ -126,7 +126,7 @@ suite "Range":
     check: rng.lowerEndpoint == 6
     check: rng.lowerBoundType() == Bound.closed
     check: not rng.isEmpty()
-    check: $rng == "[6..+\u221e)"
+    check: $rng == "[6..+∞)"
 
   test "AtMost":
     let rng = newRangeAtMost(4)
@@ -139,7 +139,7 @@ suite "Range":
     check: rng.upperEndpoint == 4
     check: rng.upperBoundType() == Bound.closed
     check: not rng.isEmpty()
-    check: $rng == "(-\u221e..4]"
+    check: $rng == "(-∞..4]"
 
   test "All":
     let rng = newRangeAll[int]()
@@ -148,4 +148,4 @@ suite "Range":
     check: not rng.hasLowerBound()
     check: not rng.hasUpperBound()
     check: not rng.isEmpty()
-    check: $rng == "(-\u221e..+\u221e)"
+    check: $rng == "(-∞..+∞)"

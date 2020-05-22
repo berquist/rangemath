@@ -68,12 +68,12 @@ func asUpperBound[T](c: Cut[T]): Bound =
 
 func describeAsLowerBound[T](c: Cut[T]): string =
   case c.kind:
-    of CutKind.all: "(-\u221e"
+    of CutKind.all: "(-∞"
     of CutKind.value: c.asLowerBound().describeAsLower() & $c.endpoint
 
 func describeAsUpperBound[T](c: Cut[T]): string =
   case c.kind:
-    of CutKind.all: "+\u221e)"
+    of CutKind.all: "+∞)"
     of CutKind.value: $c.endpoint & c.asUpperBound().describeAsUpper()
 
 func compare[T](self, other: Cut[T]): int =
