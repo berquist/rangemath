@@ -1,4 +1,6 @@
 import gara
+import hashes
+import sets
 import unittest
 
 type
@@ -135,6 +137,14 @@ func `>=`[T](left, right: Cut[T]): bool =
 
 func `>`[T](left, right: Cut[T]): bool =
   left.compare(right) > 0
+
+func hash[T](c: Cut[T]): Hash =
+  var h: Hash = 0
+  h = h !& c.position.ord
+  h = h !& c.kind.ord
+  if c.kind == CutKind.value:
+    h = h !& c.endpoint
+  result = !$h
 
 type
   Range*[T] = object
@@ -329,6 +339,12 @@ func intersects*[T](left, right: Range[T]): bool =
       intersectionUpperBound = if upperCmp <= 0: left.upperBound else: right.upperBound
     intersectionLowerBound <= intersectionUpperBound
 
+func hash*[T](r: Range[T]): Hash =
+  var h: Hash = 0
+  h = h !& hash(r.lowerBound)
+  h = h !& hash(r.upperBound)
+  result = !$h
+
 suite "Bound":
   test "flip":
     check: Bound.open.flip() == Bound.closed
@@ -400,3 +416,15 @@ suite "Cut":
     check: belowValue2.compare(aboveValue2) == -1
     check: belowValue2.compare(aboveValue3) == -1
     check: belowValue3.compare(aboveValue2) == 1
+
+  test "hash":
+    let
+      belowAll = Cut[int](kind: CutKind.all, position: CutPosition.below)
+      aboveAll = Cut[int](kind: CutKind.all, position: CutPosition.above)
+      belowValue2 = Cut[int](kind: CutKind.value, position: CutPosition.below, endpoint: 2)
+      s = [
+        belowAll, belowAll,
+        aboveAll, aboveAll,
+        belowValue2, belowValue2
+      ].toHashSet()
+    check: len(s) == 3

@@ -1,4 +1,5 @@
 import rangemath
+import sets
 import unittest
 
 ## Tests for Range.
@@ -322,15 +323,14 @@ suite "Range":
     # ):
     #     Range.create_spanning([])
 
-  # Currently not usable in set
-  # test "check_usable_in_set":
-  #   let setOfRanges = [
-  #     newRangeOpenClosed(0, 1),
-  #     newRangeOpenClosed(0, 1),
-  #     newRangeAtMost(1),
-  #     newRangeAtMost(1)
-  #   ].toHashSet()
-  #   check: len(setOfRanges) == 2
+  test "check_usable_in_set":
+    let setOfRanges = [
+      newRangeOpenClosed(0, 1),
+      newRangeOpenClosed(0, 1),
+      newRangeAtMost(1),
+      newRangeAtMost(1)
+    ].toHashSet()
+    check: len(setOfRanges) == 2
 
   # TODO
   # def assert_unbounded_below(self, rng: Range):
