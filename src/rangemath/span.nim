@@ -1,6 +1,6 @@
 import options
 
-import ../rangemath
+import ./range
 
 type
   Span* = object

@@ -1,5 +1,6 @@
-import ../src/rangemath/span
 import unittest
+
+import ../src/rangemath
 
 suite "Span":
   test "index":

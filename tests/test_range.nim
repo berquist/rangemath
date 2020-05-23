@@ -1,6 +1,7 @@
-import rangemath
 import sets
 import unittest
+
+import ../src/rangemath/range
 
 ## Tests for Range.
 ##
