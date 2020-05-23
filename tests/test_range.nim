@@ -1,7 +1,8 @@
 import sets
 import unittest
 
-import ../src/rangemath/range
+import ../src/rangemath/bound,
+       ../src/rangemath/range
 
 ## Tests for Range.
 ##

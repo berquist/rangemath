@@ -21,42 +21,42 @@ func newSpanFromInclusiveToExclusive*(startInclusive, endExclusive: int): Span =
     )
   Span(start: startInclusive, stop: endExclusive)
 
-func containsOffset(s: Span, i: int): bool =
+func containsOffset*(s: Span, i: int): bool =
   s.start <= i and i < s.stop
 
-func containsSpan(s, other: Span): bool =
+func containsSpan*(s, other: Span): bool =
   (s.start <= other.start) and (other.stop <= s.stop)
 
-func precedes(first, second: Span): bool =
+func precedes*(first, second: Span): bool =
   ## Get whether the first span precedes the second.
   ##
   ## To be judged as preceding, the first span must end before the second
   ## begins.
   first.stop <= second.start
 
-func follows(first, second: Span): bool =
+func follows*(first, second: Span): bool =
   ## Get whether the first span follows the second.
   ##
   ## To be judged as following, the first span must start after the second
   ## ends.
   first.start >= second.stop
 
-func overlaps(first, second: Span): bool =
+func overlaps*(first, second: Span): bool =
   ## Get whether the first span overlaps the second.
   ##
   ## Two spans overlap if at least one offset position is in both of them.
   not (first.precedes(second) or second.precedes(first))
 
-func asRange(s: Span): Range[int] =
+func asRange*(s: Span): Range[int] =
   newRangeClosed(s.start, s.stop - 1)
 
-func contains(s, other: Span): bool =
+func contains*(s, other: Span): bool =
   s.containsSpan(other)
 
-func len(s: Span): int =
+func len*(s: Span): int =
   s.stop - s.start
 
-func clipTo(s, enclosing: Span): Option[Span] =
+func clipTo*(s, enclosing: Span): Option[Span] =
   ## Get a copy of the first span clipped to be entirely enclosed by the
   ## second span.
   ##
@@ -72,13 +72,13 @@ func clipTo(s, enclosing: Span): Option[Span] =
                                       min(s.stop, enclosing.stop))
     )
 
-func shift(s: Span, shiftAmount: int): Span =
+func shift*(s: Span, shiftAmount: int): Span =
   ## Get a copy of this span with both endpoints shifted.
   ##
   ## Negative values shift the span to the left, positive to the right.
   newSpanFromInclusiveToExclusive(s.start + shiftAmount, s.stop + shiftAmount)
 
-func minimalEnclosingSpan(spans: openArray[Span]): Span =
+func minimalEnclosingSpan*(spans: openArray[Span]): Span =
   ## Get the minimal span enclosing all given spans.
   ##
   ## TODO This will raise a ``ValueError`` if ``spans`` is empty.
