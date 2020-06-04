@@ -123,7 +123,8 @@ func hash*[T](c: Cut[T]): Hash =
   h = h !& c.position.ord
   h = h !& c.kind.ord
   if c.kind == CutKind.value:
-    h = h !& c.endpoint
+    # hash call required for non-integer values
+    h = h !& hash(c.endpoint)
   result = !$h
 
 suite "Cut":
@@ -136,13 +137,15 @@ suite "Cut":
     aboveValue2 = Cut[int](kind: CutKind.value, position: CutPosition.above, endpoint: 2)
     aboveValue3 = Cut[int](kind: CutKind.value, position: CutPosition.above, endpoint: 3)
     aboveValue4 = Cut[int](kind: CutKind.value, position: CutPosition.above, endpoint: 4)
-    # belowAllFloat = Cut[float](kind: CutKind.all, position: CutPosition.below)
+    belowAllFloat = Cut[float](kind: CutKind.all, position: CutPosition.below)
+    belowValue2Float = Cut[float](kind: CutKind.value, position: CutPosition.below, endpoint: 2.0)
+    belowValue2p1Float = Cut[float](kind: CutKind.value, position: CutPosition.below, endpoint: 2.1)
 
   test "hash":
     discard belowAll.hash
     discard aboveAll.hash
     discard aboveValue4.hash
-    # discard belowAllFloat.hash
+    discard belowAllFloat.hash
 
   test "compare":
     check: not (belowAll < belowAll)
@@ -199,6 +202,21 @@ suite "Cut":
     check: belowValue2.compare(aboveValue2) == -1
     check: belowValue2.compare(aboveValue3) == -1
     check: belowValue3.compare(aboveValue2) == 1
+
+  test "compareFloat":
+    check: belowAllFloat < belowValue2Float
+    check: belowAllFloat <= belowValue2Float
+    check: not (belowAllFloat == belowValue2Float)
+    check: not (belowAllFloat >= belowValue2Float)
+    check: not (belowAllFloat > belowValue2Float)
+
+    check: belowValue2Float < belowValue2p1Float
+    check: belowValue2Float <= belowValue2p1Float
+    check: not (belowValue2Float == belowValue2p1Float)
+    check: not (belowValue2Float >= belowValue2p1Float)
+    check: not (belowValue2Float > belowValue2p1Float)
+
+    check: belowAllFloat < belowValue2Float
 
   test "hash":
     let
