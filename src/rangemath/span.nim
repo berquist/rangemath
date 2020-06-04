@@ -1,4 +1,6 @@
 import options
+import sequtils
+import sugar
 
 import ./range
 
@@ -10,8 +12,8 @@ type
     ##
     ## You can test sub-span containment with the ``in`` operator. For
     ## checking whether an offset lies in a span, use ``contains_offset``.
-    start: int
-    stop: int
+    start*: int
+    stop*: int
 
 func newSpanFromInclusiveToExclusive*(startInclusive, endExclusive: int): Span =
   if not (startInclusive < endExclusive):
@@ -45,6 +47,7 @@ func overlaps*(first, second: Span): bool =
   ## Get whether the first span overlaps the second.
   ##
   ## Two spans overlap if at least one offset position is in both of them.
+  # if they don't overlap, one must precede the other
   not (first.precedes(second) or second.precedes(first))
 
 func asRange*(s: Span): Range[int] =
@@ -60,8 +63,7 @@ func clipTo*(s, enclosing: Span): Option[Span] =
   ## Get a copy of the first span clipped to be entirely enclosed by the
   ## second span.
   ##
-  ## If the first span lies entirely outside ``enclosing``, then ``none`` is
-  ## returned. TODO
+  ## If the first span lies entirely outside ``enclosing``, return ``none``.
   if not enclosing.overlaps(s):
     none(Span)
   elif enclosing in s:
@@ -81,5 +83,32 @@ func shift*(s: Span, shiftAmount: int): Span =
 func minimalEnclosingSpan*(spans: openArray[Span]): Span =
   ## Get the minimal span enclosing all given spans.
   ##
-  ## TODO This will raise a ``ValueError`` if ``spans`` is empty.
-  discard
+  ## This will raise a ``ValueError`` if ``spans`` is empty.
+  if spans.len == 0:
+    raise newException(
+      ValueError,
+      "Can't get the minimal enclosing span of an empty collection of spans"
+    )
+  else:
+    result = newSpanFromInclusiveToExclusive(
+      spans.map(s => s.start).min,
+      spans.map(s => s.stop).max
+    )
+
+# func earliestThenLogestFirstKey(x: Span): tuple[int, int] =
+#   (x.start, -x.len)
+
+func `$`(x: Span): string =
+  "[" & $x.start & ":" & $x.stop & ")"
+
+func intersection*(first, second: Span): Option[Span] =
+  ## Gets the intersection of two Spans if they overlap.
+  if first.overlaps(second):
+    let rangeIntersection = first.asRange().intersection(second.asRange())
+    result = some(
+      newSpanFromInclusiveToExclusive(
+        rangeIntersection.lowerEndpoint, rangeIntersection.upperEndpoint + 1
+      )
+    )
+  else:
+    result = none(Span)
