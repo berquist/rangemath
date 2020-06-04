@@ -1,8 +1,10 @@
 import hashes
 import sets
+import tables
 import unittest
 
 import gara
+import sorta
 
 import ../bound
 
@@ -101,7 +103,7 @@ func `<`*[T](c: Cut[T], val: T): bool =
         c.endpoint < val
       else: raise newException(ValueError, "impossible branch")  
 
-func `<`[T](left, right: Cut[T]): bool =
+func `<`*[T](left, right: Cut[T]): bool =
   left.compare(right) < 0
 
 func `<=`*[T](left, right: Cut[T]): bool =
@@ -110,10 +112,10 @@ func `<=`*[T](left, right: Cut[T]): bool =
 func `==`*[T](left, right: Cut[T]): bool =
   left.compare(right) == 0
 
-func `>=`[T](left, right: Cut[T]): bool =
+func `>=`*[T](left, right: Cut[T]): bool =
   left.compare(right) >= 0
 
-func `>`[T](left, right: Cut[T]): bool =
+func `>`*[T](left, right: Cut[T]): bool =
   left.compare(right) > 0
 
 func hash*[T](c: Cut[T]): Hash =
@@ -125,17 +127,24 @@ func hash*[T](c: Cut[T]): Hash =
   result = !$h
 
 suite "Cut":
-  test "compare":
-    let
-      belowAll = Cut[int](kind: CutKind.all, position: CutPosition.below)
-      aboveAll = Cut[int](kind: CutKind.all, position: CutPosition.above)
-      belowValue2 = Cut[int](kind: CutKind.value, position: CutPosition.below, endpoint: 2)
-      belowValue3 = Cut[int](kind: CutKind.value, position: CutPosition.below, endpoint: 3)
-      belowValue4 = Cut[int](kind: CutKind.value, position: CutPosition.below, endpoint: 4)
-      aboveValue2 = Cut[int](kind: CutKind.value, position: CutPosition.above, endpoint: 2)
-      aboveValue3 = Cut[int](kind: CutKind.value, position: CutPosition.above, endpoint: 3)
-      aboveValue4 = Cut[int](kind: CutKind.value, position: CutPosition.above, endpoint: 4)
+  const
+    belowAll = Cut[int](kind: CutKind.all, position: CutPosition.below)
+    aboveAll = Cut[int](kind: CutKind.all, position: CutPosition.above)
+    belowValue2 = Cut[int](kind: CutKind.value, position: CutPosition.below, endpoint: 2)
+    belowValue3 = Cut[int](kind: CutKind.value, position: CutPosition.below, endpoint: 3)
+    belowValue4 = Cut[int](kind: CutKind.value, position: CutPosition.below, endpoint: 4)
+    aboveValue2 = Cut[int](kind: CutKind.value, position: CutPosition.above, endpoint: 2)
+    aboveValue3 = Cut[int](kind: CutKind.value, position: CutPosition.above, endpoint: 3)
+    aboveValue4 = Cut[int](kind: CutKind.value, position: CutPosition.above, endpoint: 4)
+    # belowAllFloat = Cut[float](kind: CutKind.all, position: CutPosition.below)
 
+  test "hash":
+    discard belowAll.hash
+    discard aboveAll.hash
+    discard aboveValue4.hash
+    # discard belowAllFloat.hash
+
+  test "compare":
     check: not (belowAll < belowAll)
     check: (belowAll <= belowAll)
     check: (belowAll == belowAll)
@@ -193,12 +202,25 @@ suite "Cut":
 
   test "hash":
     let
-      belowAll = Cut[int](kind: CutKind.all, position: CutPosition.below)
-      aboveAll = Cut[int](kind: CutKind.all, position: CutPosition.above)
-      belowValue2 = Cut[int](kind: CutKind.value, position: CutPosition.below, endpoint: 2)
       s = [
         belowAll, belowAll,
         aboveAll, aboveAll,
         belowValue2, belowValue2
       ].toHashSet()
     check: len(s) == 3
+
+  test "Table":
+    # Cuts need to be able to be used as keys in tables.
+    var
+      t1 = initTable[Cut[int], int]()
+    t1[belowValue2] = belowValue2.endpoint
+    t1[belowValue3] = belowValue3.endpoint
+    t1[belowValue4] = belowValue4.endpoint
+
+  test "SortedTable":
+    # Cuts need to be able to be used as keys in sorted tables.
+    var
+      st1 = initSortedTable[Cut[int], int]()
+    st1[belowValue4] = belowValue4.endpoint
+    st1[belowValue2] = belowValue2.endpoint
+    st1[belowValue3] = belowValue3.endpoint
